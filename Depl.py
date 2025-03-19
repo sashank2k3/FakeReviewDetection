@@ -46,17 +46,17 @@ def classify_review(text):
 # FUNCTION TO STYLE RESULTS
 def format_prediction(prediction):
     if "Genuine" in prediction:
-        return f'<p class="genuine">{prediction}</p>'
+        return f'<span class="genuine">{prediction}</span>'
     elif "Fraudulent" in prediction:
-        return f'<p class="fraudulent">{prediction}</p>'
+        return f'<span class="fraudulent">{prediction}</span>'
     else:
-        return f'<p class="unverified">⚪ Not a Verified User</p>'
+        return f'<span class="unverified">⚪ Not a Verified User</span>'
 
 # PAGE FORMATTING AND APPLICATION
 def main():
     st.set_page_config(page_title="Fraud Review Detector", page_icon="🔍", layout="wide")
     
-    # Custom CSS for Styling
+    # Improved CSS for Better Readability
     st.markdown("""
         <style>
             body { font-family: 'Arial', sans-serif; }
@@ -64,9 +64,9 @@ def main():
                 text-align: center;
                 font-size: 36px;
                 font-weight: bold;
-                color: #ffffff;
-                padding: 10px;
-                background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+                color: white;
+                padding: 15px;
+                background: linear-gradient(to right, #1B1B1B, #2C3E50);
                 border-radius: 10px;
             }
             .sub-title {
@@ -75,26 +75,18 @@ def main():
                 color: #1ABC9C;
                 margin-top: -15px;
             }
-            .uploaded-file {
+            .card {
+                background: #ffffff;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+                margin: 10px 0;
+                color: black;  /* Ensure text is readable */
+            }
+            .review-text {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2874A6;
-            }
-            .dataframe {
-                border-radius: 10px;
-                overflow: hidden;
-                background: white;
-                box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
-            }
-            .dataframe th {
-                background-color: #2E86C1;
-                color: white;
-                text-align: center;
-                padding: 12px;
-            }
-            .dataframe td {
-                text-align: center;
-                padding: 10px;
+                color: #2C3E50;
             }
             .genuine {
                 color: #27AE60;
@@ -110,18 +102,6 @@ def main():
                 color: #7F8C8D;
                 font-weight: bold;
                 font-size: 16px;
-            }
-            .card {
-                background: #F7F9F9;
-                padding: 15px;
-                border-radius: 10px;
-                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-                margin: 10px 0;
-            }
-            .review-text {
-                font-size: 18px;
-                font-weight: bold;
-                color: #2C3E50;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -144,14 +124,14 @@ def main():
 
             st.write("### Classification Results")
             
-            # Display results using custom cards
+            # Display results using custom-styled cards
             for i, row in df.iterrows():
                 st.markdown(f"""
                     <div class="card">
-                        <p class="review-text">📌 Review: {row['reviews']}</p>
-                        <p><b>🆔 Order ID:</b> {row['orderid'] if row['orderid'] else 'N/A'}</p>
-                        <p><b>🔍 Verification Status:</b> {row['Verification Status']}</p>
-                        {row['Styled Prediction']}
+                        <p class="review-text">📌 <b>Review:</b> {row['reviews']}</p>
+                        <p><b>🆔 Order ID:</b> <span style="color:#2874A6;">{row['orderid'] if row['orderid'] else 'N/A'}</span></p>
+                        <p><b>🔍 Verification Status:</b> <span style="color:#1ABC9C;">{row['Verification Status']}</span></p>
+                        <p><b>🔎 Prediction:</b> {row['Styled Prediction']}</p>
                     </div>
                 """, unsafe_allow_html=True)
 
