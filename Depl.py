@@ -43,6 +43,19 @@ def classify_review(text):
     prediction = model.predict(process)
     return "🟢 Genuine" if prediction[0] else "🔴 Fraudulent"
 
+# FUNCTION TO CHECK VERIFICATION
+def check_verification(orderid, retailer, productname):
+    valid_retailers = ["amazon", "flipkart", "myntra", "meesho", "ajio"]
+    
+    if (
+        pd.notna(orderid) and str(orderid).strip() and
+        pd.notna(retailer) and str(retailer).strip().lower() in valid_retailers and
+        pd.notna(productname) and str(productname).strip()
+    ):
+        return "✅ Verified User"
+    else:
+        return "❌ Not a Verified User"
+
 # FUNCTION TO STYLE RESULTS
 def format_prediction(prediction):
     if "Genuine" in prediction:
@@ -107,17 +120,17 @@ def main():
     """, unsafe_allow_html=True)
 
     st.markdown('<p class="main-title">🛒 Fraud Detection in Online Reviews 🔍</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">Upload a CSV File with Reviews & Order ID</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">Upload a CSV File with Reviews, Order ID, Retailer & Product Name</p>', unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader("Upload CSV File", type=["csv"], key="file")
 
     if uploaded_file:
         df = pd.read_csv(uploaded_file)  # Read the CSV
-        if 'reviews' not in df.columns or 'orderid' not in df.columns:
-            st.error("CSV file must have 'reviews' and 'orderid' columns")
+        if not all(col in df.columns for col in ["reviews", "orderid", "retailer", "productname"]):
+            st.error("CSV file must have 'reviews', 'orderid', 'retailer', and 'productname' columns")
         else:
-            df['Verification Status'] = df['orderid'].apply(lambda x: "Verified ✅" if pd.notna(x) and str(x).strip() else "Not a Verified User ❌")
-            df['Prediction'] = df.apply(lambda row: classify_review(row['reviews']) if row['Verification Status'] == "Verified ✅" else "⚪ Not a Verified User", axis=1)
+            df['Verification Status'] = df.apply(lambda row: check_verification(row['orderid'], row['retailer'], row['productname']), axis=1)
+            df['Prediction'] = df.apply(lambda row: classify_review(row['reviews']) if row['Verification Status'] == "✅ Verified User" else "⚪ Not a Verified User", axis=1)
 
             # Apply styles to predictions
             df['Styled Prediction'] = df['Prediction'].apply(format_prediction)
@@ -130,6 +143,8 @@ def main():
                     <div class="card">
                         <p class="review-text">📌 <b>Review:</b> {row['reviews']}</p>
                         <p><b>🆔 Order ID:</b> <span style="color:#2874A6;">{row['orderid'] if row['orderid'] else 'N/A'}</span></p>
+                        <p><b>🏬 Retailer:</b> <span style="color:#F39C12;">{row['retailer'] if row['retailer'] else 'N/A'}</span></p>
+                        <p><b>📦 Product Name:</b> <span style="color:#16A085;">{row['productname'] if row['productname'] else 'N/A'}</span></p>
                         <p><b>🔍 Verification Status:</b> <span style="color:#1ABC9C;">{row['Verification Status']}</span></p>
                         <p><b>🔎 Prediction:</b> {row['Styled Prediction']}</p>
                     </div>
