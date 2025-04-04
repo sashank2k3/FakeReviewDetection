@@ -8,13 +8,14 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 import re
 import logging
+import io
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
 # LOAD PICKLE FILES
-model = pickle.load(open('new_model.pkl', 'rb'))
-vectorizer = pickle.load(open('new_vectorizer.pkl', 'rb'))
+model = pickle.load(open('data and pickle files/new_model.pkl', 'rb'))
+vectorizer = pickle.load(open('data and pickle files/new_vectorizer.pkl', 'rb'))
 
 # FOR STREAMLIT
 nltk.download('stopwords')
@@ -94,7 +95,7 @@ def main():
                 border-radius: 10px;
                 box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
                 margin: 10px 0;
-                color: black;  /* Ensure text is readable */
+                color: black;
             }
             .review-text {
                 font-size: 18px;
@@ -120,24 +121,32 @@ def main():
     """, unsafe_allow_html=True)
 
     st.markdown('<p class="main-title">🛒 Fraud Detection in Online Reviews 🔍</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">Upload a CSV File with Reviews, Order ID, Retailer & Product Name</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">Upload a CSV or Excel File with Reviews, Order ID, Retailer & Product Name</p>', unsafe_allow_html=True)
 
-    uploaded_file = st.file_uploader("Upload CSV File", type=["csv"], key="file")
+    # Support for both CSV and Excel files
+    uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx", "xls"])
 
     if uploaded_file:
-        df = pd.read_csv(uploaded_file)  # Read the CSV
-        if not all(col in df.columns for col in ["reviews", "orderid", "retailer", "productname"]):
-            st.error("CSV file must have 'reviews', 'orderid', 'retailer', and 'productname' columns")
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                df = pd.read_csv(uploaded_file)
+            else:
+                df = pd.read_excel(uploaded_file)
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
+            return
+
+        # Check required columns
+        required_columns = {"reviews", "orderid", "retailer", "productname"}
+        if not required_columns.issubset(set(df.columns)):
+            st.error("Uploaded file must have 'reviews', 'orderid', 'retailer', and 'productname' columns")
         else:
             df['Verification Status'] = df.apply(lambda row: check_verification(row['orderid'], row['retailer'], row['productname']), axis=1)
             df['Prediction'] = df.apply(lambda row: classify_review(row['reviews']) if row['Verification Status'] == "✅ Verified User" else "⚪ Not a Verified User", axis=1)
-
-            # Apply styles to predictions
             df['Styled Prediction'] = df['Prediction'].apply(format_prediction)
 
             st.write("### Classification Results")
-            
-            # Display results using custom-styled cards
+
             for i, row in df.iterrows():
                 st.markdown(f"""
                     <div class="card">
@@ -150,5 +159,5 @@ def main():
                     </div>
                 """, unsafe_allow_html=True)
 
-# RUN MAIN        
+# RUN MAIN
 main()
