@@ -14,8 +14,8 @@ import io
 logging.basicConfig(level=logging.DEBUG)
 
 # LOAD PICKLE FILES
-model = pickle.load(open('data and pickle files/new_model.pkl', 'rb'))
-vectorizer = pickle.load(open('data and pickle files/new_vectorizer.pkl', 'rb'))
+model = pickle.load(open('new_model.pkl', 'rb'))
+vectorizer = pickle.load(open('new_vectorizer.pkl', 'rb'))
 
 # FOR STREAMLIT
 nltk.download('stopwords')
