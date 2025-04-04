@@ -6,3 +6,5 @@ nltk
 regex
 scikit-learn
 pickle-mixin
+logging
+io
