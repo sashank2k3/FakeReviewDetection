@@ -7,3 +7,4 @@ regex
 scikit-learn
 pickle-mixin
 logging
+openpyxl
