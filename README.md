@@ -10,7 +10,7 @@ In today's world, both businesses and customers believe reviews to be quite bene
 # Proceeding with the files
 The notebooks and the python file has been numbered in order, and hence for easier readibility please refer to them in order.
 
-This project has already been deployed online, and hence you can simply click the button on top to be referred to the web application
+This project has already been deployed online, and hence you can simply click the button on top to be referred to the web application.
 
 
 # MISC
