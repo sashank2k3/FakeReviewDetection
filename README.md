@@ -13,7 +13,7 @@ The notebooks and the python file has been numbered in order, and hence for easi
 This project has already been deployed online, and hence you can simply click the button on top to be referred to the web application.
 
 
-# MISC
+# MISC.
 
 DATASET: https://bit.ly/2Rzvjqf [KAGGLE]
 
